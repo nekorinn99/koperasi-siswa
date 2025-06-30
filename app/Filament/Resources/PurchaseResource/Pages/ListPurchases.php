@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\PurchaseResource\Pages;
 
-use App\Filament\Resources\PurchaseResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PurchaseResource;
 
 class ListPurchases extends ListRecords
 {
@@ -15,5 +16,13 @@ class ListPurchases extends ListRecords
         return [
             Actions\CreateAction::make(),
         ];
+    }
+    protected function getTableQuery(): Builder
+    {
+        // Eager load vendor dan items beserta product-nya
+        return parent::getTableQuery()->with([
+            'vendor',
+            'items.product',
+        ]);
     }
 }

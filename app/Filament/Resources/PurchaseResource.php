@@ -32,6 +32,7 @@ class PurchaseResource extends Resource
                     ->label('Vendor')
                     ->relationship('vendor', 'nama_vendor')
                     ->searchable()
+                    ->preload()
                     ->required(),
 
                 DatePicker::make('tanggal')
@@ -43,34 +44,39 @@ class PurchaseResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true),
 
-                Repeater::make('items')
-                    ->label('Daftar Produk')
-                    ->relationship()
+                    Forms\Components\Section::make('Daftar Produk')
                     ->schema([
-                        Select::make('product_id')
-                            ->label('Produk')
-                            ->relationship('product', 'nama')
-                            ->searchable()
-                            ->required(),
-
-                        TextInput::make('jumlah_pack')
-                            ->label('Jumlah Pack')
-                            ->numeric()
-                            ->required(),
-
-                        TextInput::make('jumlah_pcs')
-                            ->label('Jumlah PCS')
-                            ->numeric()
-                            ->required(),
-
-                        TextInput::make('harga_beli')
-                            ->label('Harga Beli')
-                            ->numeric()
-                            ->required(),
+                        Repeater::make('items')
+                            ->relationship()
+                            ->schema([
+                                Select::make('product_id')
+                                    ->label('Produk')
+                                    ->relationship('product', 'nama')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                
+                                TextInput::make('jumlah_pack')
+                                    ->label('Jumlah Pack')
+                                    ->numeric()
+                                    ->required(),
+                
+                                TextInput::make('jumlah_pcs')
+                                    ->label('Jumlah PCS')
+                                    ->numeric()
+                                    ->required(),
+                
+                                TextInput::make('harga_beli')
+                                    ->label('Harga Beli')
+                                    ->numeric()
+                                    ->required(),
+                            ])
+                            ->minItems(1)
+                            ->columns(4)
+                            ->required()
                     ])
-                    ->minItems(1)
-                    ->columns(4)
-                    ->required(),
+                    ->columnSpanFull()
+                
             ]);
     }
 
@@ -78,6 +84,7 @@ class PurchaseResource extends Resource
     {
         return $table
             ->columns([
+             
                 Tables\Columns\TextColumn::make('vendor.nama_vendor')
                     ->label('Vendor'),
 
@@ -92,9 +99,11 @@ class PurchaseResource extends Resource
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
