@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Koperasi Siswa</title>
-    
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -12,23 +13,41 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background-color: #f9fafb;
+            background-color: #F8F9FA;
             color: #1f2937;
         }
 
         nav {
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 2rem;
+            border-radius: 0px 0 20px 20px;
         }
 
         .logo {
+            direction: rtl;
+            line-height: 20px;
+            color: #111827;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            height: 50px;
+            width: auto;
+        }
+
+        .logo-text {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #111827;
+            color: black;
+            margin: 0;
         }
 
         .btn {
@@ -64,13 +83,42 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 2rem;
             padding: 2rem;
+            text-align: center;
+            line-height: 1.5;
+            align-items: start;
+        }
+
+        .stats>div {
+            justify-content: flex-start;
+            align-items: center;
+            height: 100%;
+            padding: 1rem;
         }
 
         .card {
             background-color: #ffffff;
             border-radius: 0.5rem;
             padding: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+
+            /* mengatur kecepatan animasi */
+            animation: fadeInDown 1s ease-out forwards;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: rotateY(0);
+            }
         }
 
         .card h3 {
@@ -84,6 +132,10 @@
             font-weight: bold;
             color: #111827;
             margin: 0;
+
+      /* mengatur jatuhnya text   | */     /* | mengatur masuknya text */
+            animation: fadeInDown 1s ease-out 2.4s both;
+            -webkit-font-smoothing: antialiased;
         }
 
         .chart-container {
@@ -91,7 +143,7 @@
             background-color: #ffffff;
             margin: 2rem;
             border-radius: 0.5rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         footer {
@@ -100,24 +152,66 @@
             font-size: 0.875rem;
             color: #9ca3af;
         }
+
+        .header-animasi {
+            padding: 3.2rem;
+            background: white;
+            border-radius: 20px;
+        }
+
+        .title-animasi {
+            animation: fadeInDown 1s ease-out both;
+            color: #2d3748;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .desc-animasi {
+            animation: fadeInDown 1s ease-out 1.5s both;
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0.5rem auto 0;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+
+            /* teknik anti-aliasing untuk memperjelas teks */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <nav>
-        <div class="logo">Koperasi Siswa</div>
+        <div class="logo">
+            <h1 class="logo-text">Koperasi Siswa</h1>
+            <img class="logo-img" src="https://1.bp.blogspot.com/-z4kQkYRpTcY/VJf62-w7-hI/AAAAAAAABS4/ZAvhzyDGZJw/s1600/SMK%2BNegeri%2B9%2BMalang.jpg" width="40" height="65">
+        </div>
         <div>
             @if (!Auth::check())
-                <a href="{{ url('/admin') }}" class="btn">Login Admin</a>
+            <a href="{{ url('/admin') }}" class="btn">Login Admin</a>
             @else
-                <a href="{{ route('filament.admin.pages.dashboard') }}" class="btn">Ke Panel Admin</a>
+            <a href="{{ route('filament.admin.pages.dashboard') }}" class="btn">Ke Panel Admin</a>
             @endif
         </div>
     </nav>
-
-    <header>
-        <h1>Selamat Datang di Inventory App</h1>
-        <p>Kelola stok barang, vendor, pembelian, dan keuangan koperasi dengan mudah.</p>
+    <br>
+    <header class="header-animasi">
+        <h1 class="title-animasi">Selamat Datang di Inventory App</h1>
+        <p class="desc-animasi">Kelola stok barang, vendor, pembelian, dan keuangan koperasi dengan mudah.</p>
     </header>
 
     <section class="stats">
@@ -126,7 +220,7 @@
             <p>120</p>
         </div>
         <div class="card">
-            <h3>Vendor Terdaftar</h3>
+            <h3>Daftar Vendor</h3>
             <p>8</p>
         </div>
         <div class="card">
@@ -183,4 +277,5 @@
     </script>
 
 </body>
+
 </html>
