@@ -133,7 +133,7 @@
             color: #111827;
             margin: 0;
 
-      /* mengatur jatuhnya text   | */     /* | mengatur masuknya text */
+      /* mengatur jatuhnya text   | */     /*  | mengatur masuknya text */
             animation: fadeInDown 1s ease-out 2.4s both;
             -webkit-font-smoothing: antialiased;
         }
@@ -160,12 +160,14 @@
         }
 
         .title-animasi {
+            /* mengatur kecepatan animasi */
             animation: fadeInDown 1s ease-out both;
             color: #2d3748;
             text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
         }
 
         .desc-animasi {
+      /* mengatur jatuhnya text   | */     /*  | mengatur masuknya text */
             animation: fadeInDown 1s ease-out 1.5s both;
             color: #4a5568;
             font-size: 1.1rem;
