@@ -6,185 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Koperasi Siswa</title>
 
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: #F8F9FA;
-            color: #1f2937;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
         }
 
-        nav {
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-            border-radius: 0px 0 20px 20px;
-        }
-
-        .logo {
-            direction: rtl;
-            line-height: 20px;
-            color: #111827;
-            margin-top: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-img {
-            height: 50px;
-            width: auto;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: black;
-            margin: 0;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            background-color: #2563eb;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s ease;
-        }
-
-        .btn:hover {
-            background-color: #1d4ed8;
-        }
-
-        header {
-            padding: 3rem 2rem 2rem;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 2.25rem;
-            font-weight: bold;
-        }
-
-        header p {
-            margin-top: 0.5rem;
-            color: #6b7280;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-            text-align: center;
-            line-height: 1.5;
-            align-items: start;
-        }
-
-        .stats>div {
-            justify-content: flex-start;
-            align-items: center;
-            height: 100%;
-            padding: 1rem;
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
         }
 
         .card {
-            background-color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-
-            /* mengatur kecepatan animasi */
-            animation: fadeInDown 1s ease-out forwards;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: rotateY(0);
-            }
-        }
-
-        .card h3 {
-            font-size: 1rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-        }
-
-        .card p {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #111827;
-            margin: 0;
-
-      /* mengatur jatuhnya text   | */     /*  | mengatur masuknya text */
-            animation: fadeInDown 1s ease-out 2.4s both;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .chart-container {
-            padding: 2rem;
-            background-color: #ffffff;
-            margin: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.875rem;
-            color: #9ca3af;
-        }
-
-        .header-animasi {
-            padding: 3.2rem;
             background: white;
-            border-radius: 20px;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
         }
 
-        .title-animasi {
-            /* mengatur kecepatan animasi */
-            animation: fadeInDown 1s ease-out both;
-            color: #2d3748;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .desc-animasi {
-      /* mengatur jatuhnya text   | */     /*  | mengatur masuknya text */
-            animation: fadeInDown 1s ease-out 1.5s both;
-            color: #4a5568;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            max-width: 600px;
-            margin: 0.5rem auto 0;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-
-            /* teknik anti-aliasing untuk memperjelas teks */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
         }
 
-        @keyframes fadeInDown {
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(10px);
             }
 
             to {
@@ -192,92 +64,260 @@
                 transform: translateY(0);
             }
         }
+
+        .chart-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .stats-icon {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
-<body>
+<body class="min-h-screen">
 
-    <nav>
-        <div class="logo">
-            <h1 class="logo-text">Koperasi Siswa</h1>
-            <img class="logo-img" src="https://1.bp.blogspot.com/-z4kQkYRpTcY/VJf62-w7-hI/AAAAAAAABS4/ZAvhzyDGZJw/s1600/SMK%2BNegeri%2B9%2BMalang.jpg" width="40" height="65">
+    <!-- navbar -->
+    <nav class="bg-white nav-shadow py-4 px-6 lg:px-8 flex items-center justify-between sticky top-0 z-50 rounded-b-xl">
+        <div class="flex items-center space-x-3">
+            <img class="h-12 w-8"
+                src="https://1.bp.blogspot.com/-z4kQkYRpTcY/VJf62-w7-hI/AAAAAAAABS4/ZAvhzyDGZJw/s1600/SMK%2BNegeri%2B9%2BMalang.jpg"
+                alt="Logo Sekolah">
+            <h1 class="text-2xl font-bold text-indigo-600">Koperasi Siswa</h1>
         </div>
+
+        <!-- login -->
         <div>
             @if (!Auth::check())
-            <a href="{{ url('/admin') }}" class="btn">Login Admin</a>
+            <a href="{{ url('/admin') }}" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
+                <i class="fas fa-sign-in-alt mr-2"></i> Login Admin
+            </a>
             @else
-            <a href="{{ route('filament.admin.pages.dashboard') }}" class="btn">Ke Panel Admin</a>
+            <a href="{{ route('filament.admin.pages.dashboard') }}" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
+                <i class="fas fa-tachometer-alt mr-2"></i> Panel Admin
+            </a>
             @endif
         </div>
+
     </nav>
-    <br>
-    <header class="header-animasi">
-        <h1 class="title-animasi">Selamat Datang di Inventory App</h1>
-        <p class="desc-animasi">Kelola stok barang, vendor, pembelian, dan keuangan koperasi dengan mudah.</p>
+
+    <!-- header -->
+    <header class="container mx-auto px-4 mt-8 animate-fade-in">
+        <div class="bg-white rounded-xl p-8 text-center card">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Selamat Datang di Koperasi Siswa</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Kelola stok barang, vendor, pembelian, dan keuangan koperasi dengan sistem yang modern dan efisien.
+            </p>
+        </div>
     </header>
 
-    <section class="stats">
-        <div class="card">
-            <h3>Total Produk</h3>
-            <p>120</p>
+    <!-- card total produk-->
+    <section class="container mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card p-6 animate-fade-in" style="animation-delay: 0.1s">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 font-medium">Total Produk</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">514</h3>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-boxes text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span>12% dari bulan lalu</span>
+            </div>
         </div>
-        <div class="card">
-            <h3>Daftar Vendor</h3>
-            <p>8</p>
+
+        <!-- card daftar vendor -->
+        <div class="card p-6 animate-fade-in" style="animation-delay: 0.2s">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 font-medium">Daftar Vendor</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">8</h3>
+                </div>
+                <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                    <i class="fas fa-handshake text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span>2 vendor baru</span>
+            </div>
         </div>
-        <div class="card">
-            <h3>Kategori Terlaris</h3>
-            <p>Makanan Ringan</p>
+
+        <!-- card kategori -->
+        <div class="card p-6 animate-fade-in" style="animation-delay: 0.3s">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 font-medium">Kategori Terlaris</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-2">Makanan Ringan</h3>
+                </div>
+                <div class="stats-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b">
+                    <i class="fas fa-star text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-gray-500">
+                <i class="fas fa-chart-line mr-1"></i>
+                <span>35% dari total penjualan</span>
+            </div>
         </div>
-        <div class="card">
-            <h3>Keuntungan Bulan Ini</h3>
-            <p>Rp 1.200.000</p>
+
+        <!-- card keuntungan -->
+        <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 font-medium">Keuntungan Bulan Ini</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">Rp1.200.000</h3>
+                </div>
+                <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                    <i class="fas fa-coins text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span>18% dari bulan lalu</span>
+            </div>
         </div>
     </section>
 
-    <div class="chart-container">
-        <h2 style="margin-bottom: 1rem;">Grafik Penjualan 6 Bulan Terakhir</h2>
-        <canvas id="salesChart" height="80"></canvas>
-    </div>
+    <!-- filter hari/bulan -->
+    <section class="container mx-auto px-4 mt-8 mb-12">
+        <div class="chart-container p-6 animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0">Grafik Penjualan 6 Bulan Terakhir</h2>
+                <div class="flex items-center gap-3">
+                    <label for="filter_bulan" class="font-medium text-gray-700 text-sm">
+                        <i class="fas fa-filter mr-2 text-indigo-500"></i>Filter Data:
+                    </label>
+                    <select id="filter_bulan" name="bulan" class="rounded-lg border-gray-300 text-sm px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400 w-full md:w-48">
+                        <option value="" disabled selected>-- Pilih Periode --</option>
+                        <option value="bulan">Bulan</option>
+                        <option value="hari">Hari</option>
+                    </select>
+                </div>
+            </div>
 
-    <footer>
-        &copy; {{ now()->year }} Koperasi Siswa. All rights reserved.
+            <!-- chart -->
+            <div class="h-80">
+                <canvas id="salesChart"></canvas>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-8 border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com/smknegeri9malang/" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+            <p class="text-gray-500">
+                &copy; {{ now()->year }} Koperasi Siswa. All rights reserved.
+            </p>
+            <!-- <p class="text-gray-400 text-sm mt-2">
+                Dibangun dengan <i class="fas fa-heart text-red-500"></i> untuk kemajuan pendidikan
+            </p> -->
+        </div>
     </footer>
 
     <script>
+        // chart konfigurasi
         const ctx = document.getElementById('salesChart').getContext('2d');
+
+        // gradasi untuk chart
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+        gradient.addColorStop(1, 'rgba(124, 58, 237, 0.2)');
 
         const salesChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
                 datasets: [{
                     label: 'Total Penjualan',
                     data: [1200000, 1500000, 900000, 1800000, 1600000, 2100000],
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 6,
+                    backgroundColor: gradient,
+                    borderRadius: 8,
+                    borderWidth: 0,
+                    hoverBackgroundColor: '#4f46e5',
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Rp ' + context.raw.toLocaleString('id-ID');
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false,
+                            color: '#e2e8f0'
+                        },
                         ticks: {
                             callback: function(value) {
-                                return 'Rp ' + value.toLocaleString('id-ID');
-                            }
+                                return 'Rp ' + (value / 1000000).toLocaleString('id-ID') + ' jt';
+                            },
+                            color: '#64748b'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#64748b'
                         }
                     }
                 }
             }
         });
-    </script>
 
+        // animasi untuk elemen
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.animate-fade-in');
+
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
 </body>
 
 </html>
