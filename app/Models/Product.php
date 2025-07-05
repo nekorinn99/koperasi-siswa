@@ -11,10 +11,31 @@ class Product extends Model
     protected $fillable = [
         'nama',
         'vendor_id',
+        'kategori',
         'isi_per_pack',
         'satuan_pack',
         'harga_beli',
         'harga_jual',
+    ];
+    #enum satuan_pack harus tetap sesuai dengan yang ada di database
+    public static array $satuanPackOptions = [
+        'dus' => 'Dus',
+        'kotak' => 'Kotak',
+        'bal' => 'Bal',
+        'renteng' => 'Renteng',
+        'pak' => 'Pak',
+        'bungkus' => 'Bungkus',
+        'karung' => 'Karung',
+    ];
+    public static array $kategoriOptions = [
+        'makanan_ringan' => 'Makanan Ringan',
+        'minuman' => 'Minuman',
+        'alat_tulis' => 'Alat Tulis ',
+        'buku' => 'Buku',
+        'seragam' => 'Seragam Sekolah',
+        'kebersihan' => 'Alat Kebersihan',
+        'aksesoris' => 'Aksesoris Sekolah',
+        'makanan_berat' => 'Makanan Berat',
     ];
 
     public function vendor(): BelongsTo

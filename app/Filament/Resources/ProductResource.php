@@ -2,22 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use TextInput\Mask;
 use Filament\Tables;
+use App\Models\Product;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProductResource\RelationManagers;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static ?string $navigationLabel = 'Produk';
+    protected static ?string $navigationGroup = 'Data Master';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -28,15 +33,25 @@ class ProductResource extends Resource
                 Forms\Components\Select::make('vendor_id')
                     ->relationship('vendor', 'nama_vendor')
                     ->required(),
+                Forms\Components\Select::make('kategori')
+                    ->options(Product::$kategoriOptions)
+                    ->required()
+                    ->label('Kategori'),
                 Forms\Components\TextInput::make('isi_per_pack')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('satuan_pack')
+                Select::make('satuan_pack') # option pada satuan pack akan mengarah ke model product yang nantinya akan memudahkan dalam menambahkan satuan pack tanpa mengubah migration 
+                    ->label('Satuan Pack')
+                    ->options(Product::$satuanPackOptions)
                     ->required(),
                 Forms\Components\TextInput::make('harga_beli')
+                    ->postAction(function ($state) {
+                    return number_format($state, 0, ',', '.');
+                })
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('harga_jual')
+                    #->currency('IDR', 'Rp ')
                     ->required()
                     ->numeric(),
             ]);
@@ -51,10 +66,10 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('vendor.nama_vendor')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('isi_per_pack')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('satuan_pack')
+                Tables\Columns\TextColumn::make('kategori')
+                    ->label('Kategori')
+                    ->formatStateUsing(fn ($state) => Product::$kategoriOptions[$state] ?? $state)
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('harga_beli')
                     ->numeric()
@@ -62,6 +77,12 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('harga_jual')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('satuan_pack')
+                    ->formatStateUsing(fn ($state) => Product::$satuanPackOptions[$state] ?? $state)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('isi_per_pack')
+                    ->numeric()
+                    ->sortable(),    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
