@@ -30,7 +30,9 @@ class StockOutResource extends Resource
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
                 Forms\Components\Select::make('product_id')
-                    ->relationship('product', 'id')
+                    ->relationship('product', 'nama')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Forms\Components\TextInput::make('jumlah_pack')
                     ->required()
@@ -47,10 +49,7 @@ class StockOutResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('tanggal')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('product.id')
+                Tables\Columns\TextColumn::make('product.nama')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jumlah_pack')
@@ -59,6 +58,9 @@ class StockOutResource extends Resource
                 Tables\Columns\TextColumn::make('jumlah_pcs')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal')
+                    ->date()
+                    ->sortable(),    
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -72,7 +74,11 @@ class StockOutResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

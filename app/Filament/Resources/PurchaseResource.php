@@ -69,7 +69,7 @@ class PurchaseResource extends Resource
                                     ->required(),
                 
                                 TextInput::make('harga_beli')
-                                    ->label('Harga Beli')
+                                    ->label('Harga Beli per Pack')
                                     ->numeric()
                                     ->required(),
                             ])

@@ -45,13 +45,11 @@ class ProductResource extends Resource
                     ->options(Product::$satuanPackOptions)
                     ->required(),
                 Forms\Components\TextInput::make('harga_beli')
-                    ->postAction(function ($state) {
-                    return number_format($state, 0, ',', '.');
-                })
+                    ->label('Harga Beli per Pack')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('harga_jual')
-                    #->currency('IDR', 'Rp ')
+                    ->label('Harga Jual per Pack')
                     ->required()
                     ->numeric(),
             ]);
@@ -72,9 +70,11 @@ class ProductResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('harga_beli')
+                    ->label('Harga Beli per Pack')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('harga_jual')
+                    ->label('Harga Jual per Pack')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('satuan_pack')

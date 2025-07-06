@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\FinancialTransactionResource\Pages;
 
-use App\Filament\Resources\FinancialTransactionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\FinancialTransactionResource;
+use App\Filament\Widgets\FinancialStats;
 
 class ListFinancialTransactions extends ListRecords
 {
@@ -16,4 +17,10 @@ class ListFinancialTransactions extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+    protected function getHeaderWidgets(): array
+{
+    return [
+        FinancialStats::class,
+    ];
+}
 }

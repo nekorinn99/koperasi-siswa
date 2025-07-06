@@ -49,8 +49,16 @@ class FinancialTransactionResource extends Resource
             ->columns([
                 
                 Tables\Columns\TextColumn::make('tipe')
-                    ->searchable(),
+                    ->badge()
+                    ->searchable()
+                    ->formatStateUsing(fn (string $state): string => ucfirst($state))
+                    ->color(fn (string $state): string => match ($state) {
+                        'pemasukan' => 'success',
+                        'pengeluaran' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('jumlah')
+                    ->money('IDR')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
@@ -69,7 +77,11 @@ class FinancialTransactionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
