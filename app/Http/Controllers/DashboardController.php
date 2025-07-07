@@ -5,25 +5,103 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\FinancialTransaction;
-
+use App\Models\Category;
+use App\Models\Vendor;
+use App\Models\Purchase;
+use App\Models\PurchaseItem;
+use App\Models\StockOut;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Contoh data dummy, nanti bisa kamu sesuaikan
-        $totalKeuntungan = FinancialTransaction::where('tipe', 'pemasukan')->sum('jumlah') 
-                          - FinancialTransaction::where('tipe', 'pengeluaran')->sum('jumlah');
+        // Hitung total keuntungan dari transaksi keuangan
+        $totalPemasukan = FinancialTransaction::where('tipe', 'pemasukan')->sum('jumlah');
+        $totalPengeluaran = FinancialTransaction::where('tipe', 'pengeluaran')->sum('jumlah');
+        $totalKeuntungan = $totalPemasukan - $totalPengeluaran;
 
+        // Hitung total produk
+        $totalProduk = Product::count();
+
+        // Hitung total vendor
+        $totalVendor = Vendor::count();
+
+        // Ambil kategori terlaris berdasarkan jumlah item yang dibeli
         $kategoriTerlaris = Product::withCount('purchaseItems')
                                 ->orderByDesc('purchase_items_count')
-                                ->take(5)
-                                ->get();
+                                ->first();
+
+        // Data untuk chart penjualan 6 bulan terakhir (default)
+        $monthlyChartData = $this->getMonthlyChartData();
+        
+        // Data untuk chart penjualan harian (30 hari terakhir)
+        $dailyChartData = $this->getDailyChartData();
 
         return view('dashboard', [
             'totalKeuntungan' => $totalKeuntungan,
+            'totalProduk' => $totalProduk,
+            'totalVendor' => $totalVendor,
             'kategoriTerlaris' => $kategoriTerlaris,
+            'monthlyChartData' => $monthlyChartData,
+            'dailyChartData' => $dailyChartData,
+            'chartData' => $monthlyChartData['data'],
+            'chartLabels' => $monthlyChartData['labels'],
         ]);
     }
-}
 
+    private function getMonthlyChartData()
+    {
+    $chartData = [];
+    $chartLabels = [];
+    
+    for ($i = 5; $i >= 0; $i--) {
+        $month = now()->subMonths($i);
+        $monthName = $month->format('F Y');
+        
+        $monthlyTotal = PurchaseItem::whereMonth('created_at', $month->month)
+                                  ->whereYear('created_at', $month->year)
+                                  ->get()
+                                  ->sum(function($item) {
+                                      return ($item->harga_beli * $item->jumlah_pack) + 
+                                             ($item->harga_beli * $item->jumlah_pcs);
+                                  });
+        
+        $chartLabels[] = $monthName;
+        $chartData[] = $monthlyTotal;
+    }
+
+    return [
+        'labels' => $chartLabels,
+        'data' => $chartData
+    ];
+    }
+
+    private function getDailyChartData()
+    {
+    $chartData = [];
+    $chartLabels = [];
+    
+    // Ambil data 30 hari terakhir
+    for ($i = 29; $i >= 0; $i--) {
+        $date = now()->subDays($i);
+        $dayLabel = $date->format('d M'); // Format: "01 Jun"
+        
+        // Hitung total penjualan harian
+        $dailyTotal = PurchaseItem::whereDate('created_at', $date->toDateString())
+                                ->get()
+                                ->sum(function($item) {
+                                    return ($item->harga_beli * $item->jumlah_pack) + 
+                                           ($item->harga_beli * $item->jumlah_pcs);
+                                });
+        
+        $chartLabels[] = $dayLabel;
+        $chartData[] = $dailyTotal;
+    }
+
+    return [
+        'labels' => $chartLabels,
+        'data' => $chartData
+    ];
+    }
+}
