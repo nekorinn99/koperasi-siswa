@@ -69,6 +69,7 @@
             background: white;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: opacity 0.3s ease;
         }
 
         .nav-shadow {
@@ -84,6 +85,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .loading-overlay {
+            position: relative;
+        }
+
+        .loading-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+            display: none;
+        }
+
+        .loading-overlay.loading::before {
+            display: block;
         }
     </style>
 </head>
@@ -101,17 +122,10 @@
 
         <!-- login -->
         <div>
-            @if (!Auth::check())
-            <a href="{{ url('/admin') }}" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
+            <a href="#" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
                 <i class="fas fa-sign-in-alt mr-2"></i> Login Admin
             </a>
-            @else
-            <a href="{{ route('filament.admin.pages.dashboard') }}" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
-                <i class="fas fa-tachometer-alt mr-2"></i> Panel Admin
-            </a>
-            @endif
         </div>
-
     </nav>
 
     <!-- header -->
@@ -130,7 +144,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 font-medium">Total Produk</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">514</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalProduk }}</h3>
                 </div>
                 <div class="stats-icon">
                     <i class="fas fa-boxes text-lg"></i>
@@ -138,7 +152,7 @@
             </div>
             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
                 <i class="fas fa-arrow-up mr-1"></i>
-                <span>12% dari bulan lalu</span>
+                <span>Produk tersedia</span>
             </div>
         </div>
 
@@ -147,7 +161,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500 font-medium">Daftar Vendor</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">8</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalVendor }}</h3>
                 </div>
                 <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
                     <i class="fas fa-handshake text-lg"></i>
@@ -155,7 +169,7 @@
             </div>
             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
                 <i class="fas fa-arrow-up mr-1"></i>
-                <span>2 vendor baru</span>
+                <span>Vendor aktif</span>
             </div>
         </div>
 
@@ -163,8 +177,8 @@
         <div class="card p-6 animate-fade-in" style="animation-delay: 0.3s">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 font-medium">Kategori Terlaris</p>
-                    <h3 class="text-xl font-bold text-gray-800 mt-2">Makanan Ringan</h3>
+                    <p class="text-gray-500 font-medium">Produk Terlaris</p>
+                    <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $kategoriTerlaris ? $kategoriTerlaris->nama : 'Belum ada data' }}</h3>
                 </div>
                 <div class="stats-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b">
                     <i class="fas fa-star text-lg"></i>
@@ -172,7 +186,7 @@
             </div>
             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-gray-500">
                 <i class="fas fa-chart-line mr-1"></i>
-                <span>35% dari total penjualan</span>
+                <span>85 pembelian</span>
             </div>
         </div>
 
@@ -180,8 +194,8 @@
         <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-500 font-medium">Keuntungan Bulan Ini</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">Rp1.200.000</h3>
+                    <p class="text-gray-500 font-medium">Keuntungan Total</p>
+                    <h3 class="text-2xl font-bold text-gray-800 mt-2">Rp{{ number_format($totalKeuntungan, 0, ',', '.') }}</h3>
                 </div>
                 <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
                     <i class="fas fa-coins text-lg"></i>
@@ -189,23 +203,22 @@
             </div>
             <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
                 <i class="fas fa-arrow-up mr-1"></i>
-                <span>18% dari bulan lalu</span>
+                <span>Profit</span>
             </div>
         </div>
     </section>
 
     <!-- filter hari/bulan -->
     <section class="container mx-auto px-4 mt-8 mb-12">
-        <div class="chart-container p-6 animate-fade-in">
+        <div class="chart-container p-6 animate-fade-in loading-overlay" id="chartContainer">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0">Grafik Penjualan 6 Bulan Terakhir</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0" id="chartTitle">Grafik Penjualan 6 Bulan Terakhir</h2>
                 <div class="flex items-center gap-3">
                     <label for="filter_bulan" class="font-medium text-gray-700 text-sm">
                         <i class="fas fa-filter mr-2 text-indigo-500"></i>Filter Data:
                     </label>
                     <select id="filter_bulan" name="bulan" class="rounded-lg border-gray-300 text-sm px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400 w-full md:w-48">
-                        <option value="" disabled selected>-- Pilih Periode --</option>
-                        <option value="bulan">Bulan</option>
+                        <option value="bulan" selected>Bulan</option>
                         <option value="hari">Hari</option>
                     </select>
                 </div>
@@ -215,7 +228,6 @@
             <div class="h-80">
                 <canvas id="salesChart"></canvas>
             </div>
-
         </div>
     </section>
 
@@ -237,82 +249,225 @@
                 </a>
             </div>
             <p class="text-gray-500">
-                &copy; {{ now()->year }} Koperasi Siswa. All rights reserved.
+                &copy; 2025 Koperasi Siswa. All rights reserved.
             </p>
-            <!-- <p class="text-gray-400 text-sm mt-2">
-                Dibangun dengan <i class="fas fa-heart text-red-500"></i> untuk kemajuan pendidikan
-            </p> -->
         </div>
     </footer>
 
     <script>
-        // chart konfigurasi
-        const ctx = document.getElementById('salesChart').getContext('2d');
+        // Data untuk chart dari Laravel
+        const monthlyData = {
+            labels: @json($monthlyChartData['labels'] ?? []),
+            data: @json($monthlyChartData['data'] ?? [])
+        };
 
-        // gradasi untuk chart
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
-        gradient.addColorStop(1, 'rgba(124, 58, 237, 0.2)');
+        // Data harian untuk bulan ini (30 hari terakhir)
+        const dailyData = {
+            labels: @json($dailyChartData['labels'] ?? []),
+            data: @json($dailyChartData['data'] ?? [])
+        };
 
-        const salesChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'],
-                datasets: [{
-                    label: 'Total Penjualan',
-                    data: [1200000, 1500000, 900000, 1800000, 1600000, 2100000],
-                    backgroundColor: gradient,
-                    borderRadius: 8,
-                    borderWidth: 0,
-                    hoverBackgroundColor: '#4f46e5',
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
+        let salesChart;
+        let currentFilter = 'bulan';
+
+        // Fungsi untuk membuat chart
+        function createChart(labels, data, chartType = 'bulan') {
+            const canvasElement = document.getElementById('salesChart');
+            if (!canvasElement) {
+                console.error('Canvas element tidak ditemukan');
+                return;
+            }
+
+            const ctx = canvasElement.getContext('2d');
+            
+            // Hapus chart lama jika ada
+            if (salesChart) {
+                salesChart.destroy();
+            }
+
+            // Buat gradasi untuk chart
+            const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+            gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+            gradient.addColorStop(1, 'rgba(124, 58, 237, 0.2)');
+
+            // Konfigurasi chart berdasarkan tipe
+            const isDaily = chartType === 'hari';
+            
+            // Konfigurasi chart
+            salesChart = new Chart(ctx, {
+                type: isDaily ? 'line' : 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: isDaily ? 'Penjualan Harian' : 'Total Penjualan',
+                        data: data,
+                        backgroundColor: isDaily ? 'rgba(79, 70, 229, 0.1)' : gradient,
+                        borderColor: isDaily ? '#4f46e5' : 'transparent',
+                        borderWidth: isDaily ? 3 : 0,
+                        borderRadius: isDaily ? 0 : 8,
+                        fill: isDaily ? true : false,
+                        tension: isDaily ? 0.4 : 0,
+                        pointBackgroundColor: isDaily ? '#4f46e5' : 'transparent',
+                        pointBorderColor: isDaily ? '#ffffff' : 'transparent',
+                        pointBorderWidth: isDaily ? 2 : 0,
+                        pointRadius: isDaily ? 4 : 0,
+                        pointHoverRadius: isDaily ? 6 : 0,
+                        hoverBackgroundColor: '#4f46e5',
+                        maxBarThickness: isDaily ? 0 : 60,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
+                                }
+                            },
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#4f46e5',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                        }
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return 'Rp ' + context.raw.toLocaleString('id-ID');
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: '#e2e8f0',
+                                drawTicks: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    if (isDaily) {
+                                        return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
+                                    } else {
+                                        return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
+                                    }
+                                },
+                                color: '#64748b',
+                                padding: 10,
+                            },
+                            border: {
+                                display: false,
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                padding: 10,
+                                maxTicksLimit: isDaily ? 10 : 6,
+                            },
+                            border: {
+                                display: false,
                             }
                         }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false,
-                            color: '#e2e8f0'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return 'Rp ' + (value / 1000000).toLocaleString('id-ID') + ' jt';
-                            },
-                            color: '#64748b'
-                        }
                     },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#64748b'
-                        }
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart',
                     }
                 }
+            });
+
+            console.log('Chart berhasil dibuat dengan tipe:', chartType);
+            console.log('Data labels:', labels);
+            console.log('Data values:', data);
+        }
+
+        // Fungsi untuk update judul chart
+        function updateChartTitle(filterType) {
+            const titleElement = document.querySelector('.chart-container h2');
+            if (titleElement) {
+                if (filterType === 'hari') {
+                    titleElement.textContent = 'Grafik Penjualan Harian (30 Hari Terakhir)';
+                } else {
+                    titleElement.textContent = 'Grafik Penjualan 6 Bulan Terakhir';
+                }
+            }
+        }
+
+        // Fungsi untuk menampilkan loading
+        function showLoading() {
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer) {
+                chartContainer.style.opacity = '0.6';
+            }
+        }
+
+        // Fungsi untuk menyembunyikan loading
+        function hideLoading() {
+            const chartContainer = document.querySelector('.chart-container');
+            if (chartContainer) {
+                chartContainer.style.opacity = '1';
+            }
+        }
+
+        // Fungsi untuk mengganti chart
+        function switchChart(filterType) {
+            console.log('Switching chart to:', filterType);
+            
+            showLoading();
+            
+            setTimeout(() => {
+                if (filterType === 'hari') {
+                    createChart(dailyData.labels, dailyData.data, 'hari');
+                    updateChartTitle('hari');
+                } else {
+                    createChart(monthlyData.labels, monthlyData.data, 'bulan');
+                    updateChartTitle('bulan');
+                }
+                
+                currentFilter = filterType;
+                hideLoading();
+            }, 200);
+        }
+
+        // Tunggu hingga Chart.js sepenuhnya dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing chart...');
+            console.log('Monthly data:', monthlyData);
+            console.log('Daily data:', dailyData);
+            
+            // Buat chart default (bulanan)
+            createChart(monthlyData.labels, monthlyData.data, 'bulan');
+
+            // Event listener untuk filter
+            const filterSelect = document.getElementById('filter_bulan');
+            if (filterSelect) {
+                filterSelect.addEventListener('change', function() {
+                    const selectedFilter = this.value;
+                    console.log('Filter dipilih:', selectedFilter);
+                    
+                    // Hanya update jika filter berbeda
+                    if (selectedFilter !== currentFilter) {
+                        switchChart(selectedFilter);
+                    }
+                });
+            } else {
+                console.error('Filter select element tidak ditemukan');
             }
         });
 
-        // animasi untuk elemen
-        document.addEventListener('DOMContentLoaded', () => {
+        // Animasi untuk elemen cards
+        document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.animate-fade-in');
-
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.1}s`;
             });
