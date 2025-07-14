@@ -28,7 +28,9 @@ class Purchase extends Model
                     'tipe' => 'pengeluaran',
                     'jumlah' => $total,
                     'tanggal' => now(),
-                    'keterangan' => 'Pembelian barang - No Faktur: ' . $purchase->no_faktur,
+                    'keterangan' => 'Pembelian barang - No Faktur: ' . $purchase->no_faktur .
+                    ($purchase->keterangan ? ' | Catatan: ' . $purchase->keterangan : ''),
+
                     'purchase_id' => $purchase->id,
                 ]);
             }

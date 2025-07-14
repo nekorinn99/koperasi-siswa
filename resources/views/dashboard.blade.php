@@ -122,7 +122,7 @@
 
         <!-- login -->
         <div>
-            <a href="#" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
+            <a href="/admin/login" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
                 <i class="fas fa-sign-in-alt mr-2"></i> Login Admin
             </a>
         </div>

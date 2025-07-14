@@ -23,7 +23,7 @@ class PurchaseResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
     protected static ?string $navigationLabel = 'Barang Masuk';
     protected static ?string $navigationGroup = 'Manajemen Stok';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
     
 
     public static function form(Form $form): Form
@@ -59,12 +59,12 @@ class PurchaseResource extends Resource
                                     ->required(),
                 
                                 TextInput::make('jumlah_pack')
-                                    ->label('Jumlah Pack')
+                                    ->label('Jumlah Pack Yang Dibeli')
                                     ->numeric()
                                     ->required(),
                 
                                 TextInput::make('jumlah_pcs')
-                                    ->label('Jumlah PCS')
+                                    ->label('Jumlah PCS (Opsional)')
                                     ->numeric()
                                     ->required(),
                 

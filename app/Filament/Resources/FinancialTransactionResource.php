@@ -20,7 +20,7 @@ class FinancialTransactionResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
     protected static ?string $navigationLabel = 'Riwayat Transaksi';
     protected static ?string $navigationGroup = 'Keuangan';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {
@@ -63,7 +63,13 @@ class FinancialTransactionResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
-                    ->sortable(),    
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('keterangan')
+                    ->label('Keterangan')
+                    ->wrap()
+                    ->limit(35)
+                    ->tooltip(fn ($record) => $record->keterangan),
+                        
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

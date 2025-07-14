@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -22,7 +23,7 @@ class ProductResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-cube';
     protected static ?string $navigationLabel = 'Produk';
     protected static ?string $navigationGroup = 'Data Master';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -30,9 +31,7 @@ class ProductResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('nama')
                     ->required(),
-                Forms\Components\Select::make('vendor_id')
-                    ->relationship('vendor', 'nama_vendor')
-                    ->required(),
+                
                 Forms\Components\Select::make('kategori')
                     ->options(Product::$kategoriOptions)
                     ->required()
@@ -61,9 +60,6 @@ class ProductResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('vendor.nama_vendor')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('kategori')
                     ->label('Kategori')
                     ->formatStateUsing(fn ($state) => Product::$kategoriOptions[$state] ?? $state)
@@ -93,7 +89,15 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('kategori')
+                    ->label('Kategori')
+                    ->options(fn () => Product::query()
+                        ->select('kategori')
+                        ->distinct()
+                        ->pluck('kategori', 'kategori')
+                        ->filter()
+                    )
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([

@@ -10,7 +10,6 @@ class Product extends Model
 {
     protected $fillable = [
         'nama',
-        'vendor_id',
         'kategori',
         'isi_per_pack',
         'satuan_pack',

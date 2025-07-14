@@ -19,7 +19,7 @@ class StockOutResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-tray';
     protected static ?string $navigationLabel = 'Barang Keluar';
     protected static ?string $navigationGroup = 'Manajemen Stok';
-    protected static ?int $navigationSort = 2;    
+    protected static ?int $navigationSort = 5;    
 
     #protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

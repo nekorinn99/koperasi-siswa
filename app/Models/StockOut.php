@@ -33,8 +33,10 @@ class StockOut extends Model
                 'tipe' => 'pemasukan',
                 'jumlah' => $total,
                 'tanggal' => now(),
-                'keterangan' => 'Penjualan produk: ' . $stockOut->product->nama,
+                'keterangan' => 'Pengeluaran barang - Produk: ' . $stockOut->product->nama .
+                    ($stockOut->keterangan ? ' | Catatan: ' . $stockOut->keterangan : ''),
                 'stock_out_id' => $stockOut->id,
+                
             ]);
         }
     });

@@ -10,6 +10,7 @@ class FinancialStats extends BaseWidget
 {
     protected static bool $isLazy = false;
 
+    protected int | string | array $columnSpan = 12;
     protected function getStats(): array
     {
         $pemasukan = FinancialTransaction::where('tipe', 'pemasukan')->sum('jumlah');
@@ -17,6 +18,9 @@ class FinancialStats extends BaseWidget
         $saldo = $pemasukan - $pengeluaran;
 
         return [
+            Stat::make('Saldo Sekarang', 'Rp ' . number_format($saldo, 0, ',', '.'))
+                ->description('Pemasukan - Pengeluaran')
+                ->color('primary'),
             Stat::make('Total Pemasukan', 'Rp ' . number_format($pemasukan, 0, ',', '.'))
                 ->description('Uang masuk')
                 ->color('success'),
@@ -25,9 +29,7 @@ class FinancialStats extends BaseWidget
                 ->description('Uang keluar')
                 ->color('danger'),
 
-            Stat::make('Saldo Sekarang', 'Rp ' . number_format($saldo, 0, ',', '.'))
-                ->description('Pemasukan - Pengeluaran')
-                ->color('primary'),
+            
         ];
     }
 }
