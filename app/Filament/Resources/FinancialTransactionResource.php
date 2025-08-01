@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\FinancialTransaction;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FinancialTransactionResource\Pages;

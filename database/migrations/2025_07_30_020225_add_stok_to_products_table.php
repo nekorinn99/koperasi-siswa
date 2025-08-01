@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vendors', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_brand');
-            $table->string('alamat')->nullable();
-            $table->string('no_telp')->nullable();
-            
-            $table->timestamps();
+        Schema::table('products', function (Blueprint $table) {
+            $table->integer('stok')->default(0);
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vendors');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('stok');
+        });
     }
 };

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\FinancialTransaction;
+use App\Models\PurchaseItem;
 
 class StockOut extends Model
 {
@@ -12,41 +13,52 @@ class StockOut extends Model
         'tanggal',
         'product_id',
         'jumlah_pack',
-        'jumlah_pcs',
         'keterangan',
     ];
+
     protected static function booted()
-{
-    static::created(function ($stockOut) {
-        // Pastikan relasi 'product' dimuat
-        $stockOut->loadMissing('product');
-
-       // Ambil harga jual dari produk
-       $hargaJual = $stockOut->product->harga_jual ?? 0;
-
-       // Hitung total dari jumlah pack dan harga jual per pack
-       $total = $stockOut->jumlah_pack * $hargaJual;
-
-        // Jika total lebih dari 0, buat transaksi
-        if ($total > 0) {
-            FinancialTransaction::create([
-                'tipe' => 'pemasukan',
-                'jumlah' => $total,
-                'tanggal' => now(),
-                'keterangan' => 'Pengeluaran barang - Produk: ' . $stockOut->product->nama .
-                    ($stockOut->keterangan ? ' | Catatan: ' . $stockOut->keterangan : ''),
-                'stock_out_id' => $stockOut->id,
-                
-            ]);
+    {
+        {
+            static::created(fn($stock) => $stock->product->decrement('stok', $stock->jumlah_pack));
+            static::deleted(fn($stock) => $stock->product->increment('stok', $stock->jumlah_pack));
         }
-    });
-}
+        static::created(function ($stockOut) {
+            // Ambil purchase item terbaru untuk produk ini
+            $purchaseItem = PurchaseItem::where('product_id', $stockOut->product_id)
+                ->latest()
+                ->first();
 
+            // Jika tidak ada purchase item, hentikan proses
+            if (!$purchaseItem) {
+                return;
+            }
+
+            // Harga beli dan jual diambil langsung per pack
+            $hargaBeliPerPack = $purchaseItem->harga_beli ?? 0;
+            $hargaJualPerPack = $purchaseItem->harga_jual ?? 0;
+
+            // Hitung total pemasukan & keuntungan berdasarkan pack
+            $total = $stockOut->jumlah_pack * $hargaJualPerPack;
+            $keuntungan = ($hargaJualPerPack - $hargaBeliPerPack) * $stockOut->jumlah_pack;
+
+            // Simpan transaksi jika ada nilai total
+            if ($total > 0) {
+                FinancialTransaction::create([
+                    'tipe' => 'pemasukan',
+                    'jumlah' => $total,
+                    'tanggal' => now(),
+                    'keterangan' =>
+                        'Penjualan produk: ' . ($purchaseItem->product->nama ?? 'Tidak diketahui') .
+                        ' | Keuntungan: ' . number_format($keuntungan, 0, ',', '.') .
+                        ($stockOut->keterangan ? ' | Catatan: ' . $stockOut->keterangan : ''),
+                    'stock_out_id' => $stockOut->id,
+                ]);
+            }
+        });
+    }
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 }
-
-

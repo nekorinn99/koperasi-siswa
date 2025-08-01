@@ -43,14 +43,14 @@ class ProductResource extends Resource
                     ->label('Satuan Pack')
                     ->options(Product::$satuanPackOptions)
                     ->required(),
-                Forms\Components\TextInput::make('harga_beli')
-                    ->label('Harga Beli per Pack')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('harga_jual')
-                    ->label('Harga Jual per Pack')
-                    ->required()
-                    ->numeric(),
+                #Forms\Components\TextInput::make('harga_beli')
+                #    ->label('Harga Beli per Pack')
+                #    ->required()
+                #    ->numeric(),
+                #Forms\Components\TextInput::make('harga_jual')
+                #    ->label('Harga Jual per Pack')
+                #    ->required()
+                #    ->numeric(),
             ]);
     }
 
@@ -65,14 +65,6 @@ class ProductResource extends Resource
                     ->formatStateUsing(fn ($state) => Product::$kategoriOptions[$state] ?? $state)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('harga_beli')
-                    ->label('Harga Beli per Pack')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('harga_jual')
-                    ->label('Harga Jual per Pack')
-                    ->numeric()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('satuan_pack')
                     ->formatStateUsing(fn ($state) => Product::$satuanPackOptions[$state] ?? $state)
                     ->searchable(),

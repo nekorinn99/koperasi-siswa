@@ -37,9 +37,6 @@ class StockOutResource extends Resource
                 Forms\Components\TextInput::make('jumlah_pack')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('jumlah_pcs')
-                    ->required()
-                    ->numeric(),
                 Forms\Components\Textarea::make('keterangan')
                     ->columnSpanFull(),
             ]);
@@ -53,9 +50,6 @@ class StockOutResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jumlah_pack')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('jumlah_pcs')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal')

@@ -13,8 +13,7 @@ class Product extends Model
         'kategori',
         'isi_per_pack',
         'satuan_pack',
-        'harga_beli',
-        'harga_jual',
+      
     ];
     #enum satuan_pack harus tetap sesuai dengan yang ada di database
     public static array $satuanPackOptions = [

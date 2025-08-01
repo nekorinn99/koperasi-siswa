@@ -33,6 +33,7 @@ class StockResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultSort('stok', 'desc')
         ->columns([
             Tables\Columns\TextColumn::make('nama')
                 ->label('Nama Produk')
@@ -43,13 +44,14 @@ class StockResource extends Resource
                 ->sortable()
                 ->formatStateUsing(fn (string $state) => Product::$kategoriOptions[$state] ?? $state),
 
-            Tables\Columns\TextColumn::make('stok_tersedia')
+            Tables\Columns\TextColumn::make('stok')
                 ->label('Stok')
-                ->getStateUsing(function ($record) {
-                    $masuk = $record->purchaseItems()->sum(DB::raw('jumlah_pack * jumlah_pcs'));
-                    $keluar = $record->stockOuts()->sum(DB::raw('jumlah_pack * jumlah_pcs'));
-                    return $masuk - $keluar;
-                }),
+                ->sortable(),
+                #->getStateUsing(function ($record) {
+                #    $masuk = $record->purchaseItems()->sum(DB::raw('jumlah_pack'));
+                #    $keluar = $record->stockOuts()->sum(DB::raw('jumlah_pack'));
+                #    return $masuk - $keluar;
+                #}),
 
             Tables\Columns\TextColumn::make('satuan_pack')
                 ->label('Satuan'),

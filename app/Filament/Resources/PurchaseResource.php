@@ -63,13 +63,13 @@ class PurchaseResource extends Resource
                                     ->numeric()
                                     ->required(),
                 
-                                TextInput::make('jumlah_pcs')
-                                    ->label('Jumlah PCS (Opsional)')
-                                    ->numeric()
-                                    ->required(),
-                
                                 TextInput::make('harga_beli')
                                     ->label('Harga Beli per Pack')
+                                    ->numeric()
+                                    ->required(),
+                                
+                                TextInput::make('harga_jual')
+                                    ->label('Harga Jual per Pack')
                                     ->numeric()
                                     ->required(),
                             ])
