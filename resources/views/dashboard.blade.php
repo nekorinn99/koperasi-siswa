@@ -114,7 +114,7 @@
     <!-- navbar -->
     <nav class="bg-white nav-shadow py-4 px-6 lg:px-8 flex items-center justify-between sticky top-0 z-50 rounded-b-xl">
         <div class="flex items-center space-x-3">
-            <img class="h-12 w-8"
+            <img class="h-12 w-8" {{-- link website logo smkn --}}
                 src="https://1.bp.blogspot.com/-z4kQkYRpTcY/VJf62-w7-hI/AAAAAAAABS4/ZAvhzyDGZJw/s1600/SMK%2BNegeri%2B9%2BMalang.jpg"
                 alt="Logo Sekolah">
             <h1 class="text-2xl font-bold text-indigo-600">Koperasi Siswa</h1>
@@ -122,7 +122,8 @@
 
         <!-- login -->
         <div>
-            <a href="/admin/login" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
+            <a href="/admin/login"
+                class="gradient-bg text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 flex items-center">
                 <i class="fas fa-sign-in-alt mr-2"></i> Login Admin
             </a>
         </div>
@@ -138,341 +139,381 @@
         </div>
     </header>
 
-    <!-- card total produk-->
-    <section class="container mx-auto px-4 mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="card p-6 animate-fade-in" style="animation-delay: 0.1s">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 font-medium">Total Produk</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalProduk }}</h3>
+    <div class="overflow-x-auto">
+        <!-- card total produk-->
+        <section class="container mx-auto px-4 mt-8 grid sm:grid-cols-4 lg:grid-cols-3 gap-2">
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Total Produk</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalProduk }}</h3>
+                    </div>
+                    <div class="stats-icon">
+                        <i class="fas fa-boxes text-lg"></i>
+                    </div>
                 </div>
-                <div class="stats-icon">
-                    <i class="fas fa-boxes text-lg"></i>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span>Produk tersedia</span>
-            </div>
-        </div>
-
-        <!-- card daftar vendor -->
-        <div class="card p-6 animate-fade-in" style="animation-delay: 0.2s">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 font-medium">Daftar Vendor</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalVendor }}</h3>
-                </div>
-                <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
-                    <i class="fas fa-handshake text-lg"></i>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span>Vendor aktif</span>
-            </div>
-        </div>
-
-        <!-- card kategori -->
-        <div class="card p-6 animate-fade-in" style="animation-delay: 0.3s">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 font-medium">Produk Terlaris</p>
-                    <h3 class="text-xl font-bold text-gray-800 mt-2">{{ $kategoriTerlaris ? $kategoriTerlaris->nama : 'Belum ada data' }}</h3>
-                </div>
-                <div class="stats-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b">
-                    <i class="fas fa-star text-lg"></i>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-gray-500">
-                <i class="fas fa-chart-line mr-1"></i>
-                <span>85 pembelian</span>
-            </div>
-        </div>
-
-        <!-- card keuntungan -->
-        <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-500 font-medium">Keuntungan Total</p>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-2">Rp{{ number_format($totalKeuntungan, 0, ',', '.') }}</h3>
-                </div>
-                <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
-                    <i class="fas fa-coins text-lg"></i>
-                </div>
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
-                <i class="fas fa-arrow-up mr-1"></i>
-                <span>Profit</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- filter hari/bulan -->
-    <section class="container mx-auto px-4 mt-8 mb-12">
-        <div class="chart-container p-6 animate-fade-in loading-overlay" id="chartContainer">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0" id="chartTitle">Grafik Penjualan 6 Bulan Terakhir</h2>
-                <div class="flex items-center gap-3">
-                    <label for="filter_bulan" class="font-medium text-gray-700 text-sm">
-                        <i class="fas fa-filter mr-2 text-indigo-500"></i>Filter Data:
-                    </label>
-                    <select id="filter_bulan" name="bulan" class="rounded-lg border-gray-300 text-sm px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400 w-full md:w-48">
-                        <option value="bulan" selected>Bulan</option>
-                        <option value="hari">Hari</option>
-                    </select>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                    <i class="fas fa-arrow-up mr-1"></i>
+                    <span>Produk tersedia</span>
                 </div>
             </div>
 
-            <!-- chart -->
-            <div class="h-80">
-                <canvas id="salesChart"></canvas>
+            <!-- card daftar vendor -->
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Daftar Vendor</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-2">{{ $totalVendor }}</h3>
+                    </div>
+                    <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                        <i class="fas fa-handshake text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                    <i class="fa-solid fa-industry mr-1"></i>
+                    <span>Vendor aktif</span>
+                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-white py-8 border-t border-gray-200">
-        <div class="container mx-auto px-4 text-center">
-            <div class="flex justify-center space-x-6 mb-4">
-                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="https://www.instagram.com/smknegeri9malang/" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
-                    <i class="fab fa-youtube"></i>
-                </a>
+            <!-- card kategori terlaris -->
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Produk Terlaris</p>
+                        <h3 class="text-xl font-bold text-gray-800 mt-2">
+                            {{ $kategoriTerlaris ? $kategoriTerlaris->nama : 'Belum ada data' }}</h3>
+                    </div>
+                    <div class="stats-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b">
+                        <i class="fas fa-star text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-gray-500">
+                    <i class="fas fa-chart-line mr-1"></i>
+                    <span>85 pembelian</span>
+                </div>
             </div>
-            <p class="text-gray-500">
-                &copy; 2025 Koperasi Siswa. All rights reserved.
-            </p>
-        </div>
-    </footer>
 
-    <script>
-        // Data untuk chart dari Laravel
-        const monthlyData = {
-            labels: @json($monthlyChartData['labels'] ?? []),
-            data: @json($monthlyChartData['data'] ?? [])
-        };
+            <!-- card total pemasukan -->
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Total Pemasukan</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                            Rp{{ number_format($data, 0, ',', '.') }}</h3>
+                    </div>
+                    <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                        <i class="fas fa-coins text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-green-500">
+                    <i class="fas fa-arrow-up mr-1"></i>
+                    <span>Uang Masuk</span>
+                </div>
+            </div>
 
-        // Data harian untuk bulan ini (30 hari terakhir)
-        const dailyData = {
-            labels: @json($dailyChartData['labels'] ?? []),
-            data: @json($dailyChartData['data'] ?? [])
-        };
+            {{-- Card Total Pengeluaran --}}
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Total Pengeluaran</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                            Rp{{ number_format($pengeluaran, 0, ',', '.') }}</h3>
+                    </div>
+                    <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                        <i class="fas fa-coins text-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center text-sm text-red-600">
+                    <i class="fas fa-arrow-down mr-1"></i>
+                    <span>Uang Keluar</span>
+                </div>
+            </div>
 
-        let salesChart;
-        let currentFilter = 'bulan';
+            <!-- card Saldo Sekarang -->
+            <div class="card p-6 animate-fade-in" style="animation-delay: 0.4s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">Saldo Sekarang</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-2">
+                            Rp{{ number_format($totalKeuntungan, 0, ',', '.') }}</h3>
+                    </div>
+                    <div class="stats-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--secondary)">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        // Fungsi untuk membuat chart
-        function createChart(labels, data, chartType = 'bulan') {
-            const canvasElement = document.getElementById('salesChart');
-            if (!canvasElement) {
-                console.error('Canvas element tidak ditemukan');
-                return;
-            }
+        <!-- filter hari/bulan -->
+        <section class="container mx-auto px-4 mt-8 mb-12">
+            <div class="chart-container p-6 animate-fade-in loading-overlay" id="chartContainer">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 md:mb-0" id="chartTitle">Grafik Penjualan 6
+                        Bulan
+                        Terakhir</h2>
+                    <div class="flex items-center gap-3">
+                        <label for="filter_bulan" class="font-medium text-gray-700 text-sm">
+                            <i class="fas fa-filter mr-2 text-indigo-500"></i>Filter Data:
+                        </label>
+                        <select id="filter_bulan" name="bulan"
+                            class="rounded-lg border-gray-300 text-sm px-4 py-2 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 hover:border-gray-400 w-full md:w-48">
+                            <option value="bulan" selected>Bulan</option>
+                            <option value="hari">Hari</option>
+                        </select>
+                    </div>
+                </div>
 
-            const ctx = canvasElement.getContext('2d');
-            
-            // Hapus chart lama jika ada
-            if (salesChart) {
-                salesChart.destroy();
-            }
 
-            // Buat gradasi untuk chart
-            const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-            gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
-            gradient.addColorStop(1, 'rgba(124, 58, 237, 0.2)');
+                <!-- chart -->
+                <div class="h-80">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
 
-            // Konfigurasi chart berdasarkan tipe
-            const isDaily = chartType === 'hari';
-            
-            // Konfigurasi chart
-            salesChart = new Chart(ctx, {
-                type: isDaily ? 'line' : 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: isDaily ? 'Penjualan Harian' : 'Total Penjualan',
-                        data: data,
-                        backgroundColor: isDaily ? 'rgba(79, 70, 229, 0.1)' : gradient,
-                        borderColor: isDaily ? '#4f46e5' : 'transparent',
-                        borderWidth: isDaily ? 3 : 0,
-                        borderRadius: isDaily ? 0 : 8,
-                        fill: isDaily ? true : false,
-                        tension: isDaily ? 0.4 : 0,
-                        pointBackgroundColor: isDaily ? '#4f46e5' : 'transparent',
-                        pointBorderColor: isDaily ? '#ffffff' : 'transparent',
-                        pointBorderWidth: isDaily ? 2 : 0,
-                        pointRadius: isDaily ? 4 : 0,
-                        pointHoverRadius: isDaily ? 6 : 0,
-                        hoverBackgroundColor: '#4f46e5',
-                        maxBarThickness: isDaily ? 0 : 60,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false,
+            <!-- Footer -->
+            <footer class="bg-white py-8 border-t border-gray-200">
+                <div class="container mx-auto px-4 text-center">
+                    <div class="flex justify-center space-x-6 mb-4">
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.instagram.com/smknegeri9malang/"
+                            class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-indigo-600 transition-colors duration-200">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                    <p class="text-gray-500">
+                        &copy; 2025 Koperasi Siswa. All rights reserved.
+                    </p>
+                </div>
+            </footer>
+
+            <script>
+                // Data untuk chart dari Laravel
+                const monthlyData = {
+                    labels: @json($monthlyChartData['labels'] ?? []),
+                    data: @json($monthlyChartData['data'] ?? [])
+                };
+
+                // Data harian untuk bulan ini (30 hari terakhir)
+                const dailyData = {
+                    labels: @json($dailyChartData['labels'] ?? []),
+                    data: @json($dailyChartData['data'] ?? [])
+                };
+
+                let salesChart;
+                let currentFilter = 'bulan';
+
+                // Fungsi untuk membuat chart
+                function createChart(labels, data, chartType = 'bulan') {
+                    const canvasElement = document.getElementById('salesChart');
+                    if (!canvasElement) {
+                        console.error('Canvas element tidak ditemukan');
+                        return;
+                    }
+
+                    const ctx = canvasElement.getContext('2d');
+
+                    // Hapus chart lama jika ada
+                    if (salesChart) {
+                        salesChart.destroy();
+                    }
+
+                    // Buat gradasi untuk chart
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+                    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.8)');
+                    gradient.addColorStop(1, 'rgba(124, 58, 237, 0.2)');
+
+                    // Konfigurasi chart berdasarkan tipe
+                    const isDaily = chartType === 'hari';
+
+                    // Konfigurasi chart
+                    salesChart = new Chart(ctx, {
+                        type: isDaily ? 'line' : 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: isDaily ? 'Penjualan Harian' : 'Total Penjualan',
+                                data: data,
+                                backgroundColor: isDaily ? 'rgba(79, 70, 229, 0.1)' : gradient,
+                                borderColor: isDaily ? '#4f46e5' : 'transparent',
+                                borderWidth: isDaily ? 3 : 0,
+                                borderRadius: isDaily ? 0 : 8,
+                                fill: isDaily ? true : false,
+                                tension: isDaily ? 0.4 : 0,
+                                pointBackgroundColor: isDaily ? '#4f46e5' : 'transparent',
+                                pointBorderColor: isDaily ? '#ffffff' : 'transparent',
+                                pointBorderWidth: isDaily ? 2 : 0,
+                                pointRadius: isDaily ? 4 : 0,
+                                pointHoverRadius: isDaily ? 6 : 0,
+                                hoverBackgroundColor: '#4f46e5',
+                                maxBarThickness: isDaily ? 0 : 60,
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Rp ' + context.raw.toLocaleString('id-ID');
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return 'Rp ' + context.raw.toLocaleString('id-ID');
+                                        }
+                                    },
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#4f46e5',
+                                    borderWidth: 1,
+                                    cornerRadius: 8,
                                 }
                             },
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: '#4f46e5',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false,
-                                color: '#e2e8f0',
-                                drawTicks: false,
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    if (isDaily) {
-                                        return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
-                                    } else {
-                                        return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        drawBorder: false,
+                                        color: '#e2e8f0',
+                                        drawTicks: false,
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            if (isDaily) {
+                                                return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
+                                            } else {
+                                                return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
+                                            }
+                                        },
+                                        color: '#64748b',
+                                        padding: 10,
+                                    },
+                                    border: {
+                                        display: false,
                                     }
                                 },
-                                color: '#64748b',
-                                padding: 10,
+                                x: {
+                                    grid: {
+                                        display: false,
+                                        drawBorder: false,
+                                    },
+                                    ticks: {
+                                        color: '#64748b',
+                                        padding: 10,
+                                        maxTicksLimit: isDaily ? 10 : 6,
+                                    },
+                                    border: {
+                                        display: false,
+                                    }
+                                }
                             },
-                            border: {
-                                display: false,
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index',
                             },
-                            ticks: {
-                                color: '#64748b',
-                                padding: 10,
-                                maxTicksLimit: isDaily ? 10 : 6,
-                            },
-                            border: {
-                                display: false,
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeInOutQuart',
                             }
                         }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                    animation: {
-                        duration: 1000,
-                        easing: 'easeInOutQuart',
+                    });
+
+                    console.log('Chart berhasil dibuat dengan tipe:', chartType);
+                    console.log('Data labels:', labels);
+                    console.log('Data values:', data);
+                }
+
+                // Fungsi untuk update judul chart
+                function updateChartTitle(filterType) {
+                    const titleElement = document.querySelector('.chart-container h2');
+                    if (titleElement) {
+                        if (filterType === 'hari') {
+                            titleElement.textContent = 'Grafik Penjualan Harian (30 Hari Terakhir)';
+                        } else {
+                            titleElement.textContent = 'Grafik Penjualan 6 Bulan Terakhir';
+                        }
                     }
                 }
-            });
 
-            console.log('Chart berhasil dibuat dengan tipe:', chartType);
-            console.log('Data labels:', labels);
-            console.log('Data values:', data);
-        }
-
-        // Fungsi untuk update judul chart
-        function updateChartTitle(filterType) {
-            const titleElement = document.querySelector('.chart-container h2');
-            if (titleElement) {
-                if (filterType === 'hari') {
-                    titleElement.textContent = 'Grafik Penjualan Harian (30 Hari Terakhir)';
-                } else {
-                    titleElement.textContent = 'Grafik Penjualan 6 Bulan Terakhir';
+                // Fungsi untuk menampilkan loading
+                function showLoading() {
+                    const chartContainer = document.querySelector('.chart-container');
+                    if (chartContainer) {
+                        chartContainer.style.opacity = '0.6';
+                    }
                 }
-            }
-        }
 
-        // Fungsi untuk menampilkan loading
-        function showLoading() {
-            const chartContainer = document.querySelector('.chart-container');
-            if (chartContainer) {
-                chartContainer.style.opacity = '0.6';
-            }
-        }
+                // Fungsi untuk menyembunyikan loading
+                function hideLoading() {
+                    const chartContainer = document.querySelector('.chart-container');
+                    if (chartContainer) {
+                        chartContainer.style.opacity = '1';
+                    }
+                }
 
-        // Fungsi untuk menyembunyikan loading
-        function hideLoading() {
-            const chartContainer = document.querySelector('.chart-container');
-            if (chartContainer) {
-                chartContainer.style.opacity = '1';
-            }
-        }
+                // Fungsi untuk mengganti chart
+                function switchChart(filterType) {
+                    console.log('Switching chart to:', filterType);
 
-        // Fungsi untuk mengganti chart
-        function switchChart(filterType) {
-            console.log('Switching chart to:', filterType);
-            
-            showLoading();
-            
-            setTimeout(() => {
-                if (filterType === 'hari') {
-                    createChart(dailyData.labels, dailyData.data, 'hari');
-                    updateChartTitle('hari');
-                } else {
+                    showLoading();
+
+                    setTimeout(() => {
+                        if (filterType === 'hari') {
+                            createChart(dailyData.labels, dailyData.data, 'hari');
+                            updateChartTitle('hari');
+                        } else {
+                            createChart(monthlyData.labels, monthlyData.data, 'bulan');
+                            updateChartTitle('bulan');
+                        }
+
+                        currentFilter = filterType;
+                        hideLoading();
+                    }, 200);
+                }
+
+                // Tunggu hingga Chart.js sepenuhnya dimuat
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM loaded, initializing chart...');
+                    console.log('Monthly data:', monthlyData);
+                    console.log('Daily data:', dailyData);
+
+                    // Buat chart default (bulanan)
                     createChart(monthlyData.labels, monthlyData.data, 'bulan');
-                    updateChartTitle('bulan');
-                }
-                
-                currentFilter = filterType;
-                hideLoading();
-            }, 200);
-        }
 
-        // Tunggu hingga Chart.js sepenuhnya dimuat
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing chart...');
-            console.log('Monthly data:', monthlyData);
-            console.log('Daily data:', dailyData);
-            
-            // Buat chart default (bulanan)
-            createChart(monthlyData.labels, monthlyData.data, 'bulan');
+                    // Event listener untuk filter
+                    const filterSelect = document.getElementById('filter_bulan');
+                    if (filterSelect) {
+                        filterSelect.addEventListener('change', function() {
+                            const selectedFilter = this.value;
+                            console.log('Filter dipilih:', selectedFilter);
 
-            // Event listener untuk filter
-            const filterSelect = document.getElementById('filter_bulan');
-            if (filterSelect) {
-                filterSelect.addEventListener('change', function() {
-                    const selectedFilter = this.value;
-                    console.log('Filter dipilih:', selectedFilter);
-                    
-                    // Hanya update jika filter berbeda
-                    if (selectedFilter !== currentFilter) {
-                        switchChart(selectedFilter);
+                            // Hanya update jika filter berbeda
+                            if (selectedFilter !== currentFilter) {
+                                switchChart(selectedFilter);
+                            }
+                        });
+                    } else {
+                        console.error('Filter select element tidak ditemukan');
                     }
                 });
-            } else {
-                console.error('Filter select element tidak ditemukan');
-            }
-        });
 
-        // Animasi untuk elemen cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.animate-fade-in');
-            cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-    </script>
+                // Animasi untuk elemen cards
+                document.addEventListener('DOMContentLoaded', function() {
+                    const cards = document.querySelectorAll('.animate-fade-in');
+                    cards.forEach((card, index) => {
+                        card.style.animationDelay = `${index * 0.1}s`;
+                    });
+                });
+            </script>
+
 </body>
 
 </html>
