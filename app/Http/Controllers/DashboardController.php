@@ -68,13 +68,17 @@ class DashboardController extends Controller
             $month = now()->subMonths($i);
             $monthName = $month->format('F Y');
 
-            $monthlyTotal = PurchaseItem::whereMonth('created_at', $month->month)
-                ->whereYear('created_at', $month->year)
-                ->get()
-                ->sum(function ($item) {
-                    return ($item->harga_beli * $item->jumlah_pack) +
-                        ($item->harga_beli * $item->jumlah_pcs);
-                });
+            $monthlyStockOut = StockOut::whereMonth('tanggal', $month->month)
+                ->whereYear('tanggal', $month->year)
+                ->get();
+
+            $monthlyTotal = $monthlyStockOut->sum(function ($stockOut) {
+                $purchaseItem = PurchaseItem::where('product_id', $stockOut->product_id)
+                    ->latest()
+                    ->first();
+                $hargaJual = $purchaseItem->harga_jual ?? 0;
+                return $stockOut->jumlah_pack * $hargaJual;
+            });
 
             $chartLabels[] = $monthName;
             $chartData[] = $monthlyTotal;
@@ -86,23 +90,25 @@ class DashboardController extends Controller
         ];
     }
 
+
     private function getDailyChartData()
     {
         $chartData = [];
         $chartLabels = [];
 
-        // Ambil data 30 hari terakhir
         for ($i = 29; $i >= 0; $i--) {
             $date = now()->subDays($i);
-            $dayLabel = $date->format('d M'); // Format: "01 Jun"
+            $dayLabel = $date->format('d M');
 
-            // Hitung total penjualan harian
-            $dailyTotal = PurchaseItem::whereDate('created_at', $date->toDateString())
-                ->get()
-                ->sum(function ($item) {
-                    return ($item->harga_beli * $item->jumlah_pack) +
-                        ($item->harga_beli * $item->jumlah_pcs);
-                });
+            $dailyStockOut = StockOut::whereDate('tanggal', $date->toDateString())->get();
+
+            $dailyTotal = $dailyStockOut->sum(function ($stockOut) {
+                $purchaseItem = PurchaseItem::where('product_id', $stockOut->product_id)
+                    ->latest()
+                    ->first();
+                $hargaJual = $purchaseItem->harga_jual ?? 0;
+                return $stockOut->jumlah_pack * $hargaJual;
+            });
 
             $chartLabels[] = $dayLabel;
             $chartData[] = $dailyTotal;
