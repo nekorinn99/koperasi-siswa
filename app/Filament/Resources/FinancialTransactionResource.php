@@ -9,11 +9,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\FinancialTransaction;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Actions;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\FinancialTransactionResource\Pages;
-use App\Filament\Resources\FinancialTransactionResource\RelationManagers;
 
 class FinancialTransactionResource extends Resource
 {
@@ -29,6 +25,7 @@ class FinancialTransactionResource extends Resource
             ->schema([
                 Forms\Components\DatePicker::make('tanggal')
                     ->required(),
+
                 Select::make('tipe')
                     ->label('Tipe Transaksi')
                     ->options([
@@ -36,11 +33,18 @@ class FinancialTransactionResource extends Resource
                         'pengeluaran' => 'Pengeluaran',
                     ])
                     ->required(),
+
                 Forms\Components\Textarea::make('keterangan')
                     ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('jumlah')
+                    ->label('Jumlah (Rp)')
                     ->required()
-                    ->numeric(),
+                    ->extraInputAttributes([
+                        'x-on:input' => "this.value = this.value.replace(/[^0-9.]/g, '')"
+                    ])
+                    ->dehydrateStateUsing(fn ($state) => $state ? str_replace('.', '', $state) : null)
+                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null),
             ]);
     }
 
@@ -48,7 +52,6 @@ class FinancialTransactionResource extends Resource
     {
         return $table
             ->columns([
-                
                 Tables\Columns\TextColumn::make('tipe')
                     ->badge()
                     ->searchable()
@@ -58,23 +61,27 @@ class FinancialTransactionResource extends Resource
                         'pengeluaran' => 'danger',
                         default => 'gray',
                     }),
+
                 Tables\Columns\TextColumn::make('jumlah')
-                    ->money('IDR')
-                    ->numeric()
+                    ->label('Jumlah (Rp)')
+                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null)
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('tanggal')
                     ->date()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('keterangan')
                     ->label('Keterangan')
                     ->wrap()
                     ->limit(35)
                     ->tooltip(fn ($record) => $record->keterangan),
-                        
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -99,9 +106,7 @@ class FinancialTransactionResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -1,126 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Laporan Keuangan</title>
+    <title>Laporan Transaksi Keuangan</title>
     <style>
-        @font-face {
-            font-family: 'DejaVu Sans';
-            src: url('{{ storage_path('fonts/dejavu-sans/DejaVuSans.ttf') }}');
-        }
+        @page { margin: 20px 25px; } /* Atur margin halaman */
         body {
-            font-family: 'DejaVu Sans', Arial, sans-serif;
-            color: #333;
+            font-family: 'system-ui', Helvetica, Arial;
             margin: 0;
-            padding: 10px;
-            font-size: 11px;
-            line-height: 1.3;
+            padding: 0;
+            background-color: #F5F7FA;
+            color: #2d3748;
+            line-height: 1.4;
+            font-size: 12px;
+        }
+        .container {
+            padding: 15px 20px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
             padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
         }
-        .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background-color: #f8f9fa;
-            border: 1px dashed #ccc;
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            margin-right: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            color: #999;
-            font-size: 9px;
-        }
-        .header-content {
-            flex-grow: 1;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
         }
         .title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin: 0 0 3px 0;
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            color: #1a365d;
         }
-        .period {
-            font-size: 11px;
-            color: #7f8c8d;
+        .subtitle {
+            font-size: 12px;
+            color: #718096;
+            margin: 0;
         }
-        .transaction-table {
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            border-left: 4px solid #4299e1;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .info-label { font-size: 11px; color: #718096; }
+        .info-value { font-size: 13px; font-weight: 600; color: #2d3748; }
+
+        table.transaction-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 5px 0;
+            margin: 10px 0;
+            font-size: 12px;
         }
-        .transaction-table thead th {
-            background-color: #f0f0f0;
+        table.transaction-table thead {
+            background: #DCFAF8;
+            display: table-header-group; /* Agar header muncul di halaman berikutnya */
+        }
+        table.transaction-table th {
             color: #333;
-            padding: 6px 8px;
-            text-align: left;
             font-weight: 600;
-            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+        table.transaction-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-size: 10px;
+            font-weight: 600;
         }
-        .transaction-table tbody td {
-            padding: 5px 8px;
-            border: 1px solid #e0e0e0;
-            vertical-align: top;
-        }
-        .amount {
-            text-align: right;
-            font-family: 'DejaVu Sans', monospace;
-        }
-        .pemasukan {
-            background-color: #92f792; /* Hijau sangat tipis */
-        }
-        .pengeluaran {
-            background-color: #fff0f0; /* Merah sangat tipis */
-        }
+        .badge-income { background: #c6f6d5; color: #22543d; }
+        .badge-expense { background: #fed7d7; color: #742a2a; }
+        .amount { text-align: right; }
         .footer {
             margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid #eee;
-            font-size: 9px;
-            color: #95a5a6;
-            text-align: right;
+            font-size: 11px;
+            text-align: center;
+            color: #718096;
         }
     </style>
 </head>
 <body>
+<div class="container">
     <div class="header">
-        <div class="logo-placeholder">
-            [LOGO]
-        </div>
-        <div class="header-content">
-            <h1 class="title">LAPORAN TRANSAKSI KEUANGAN</h1>
-            <div class="period">Periode: {{ date('d/m/Y', strtotime($start)) }} - {{ date('d/m/Y', strtotime($end)) }}</div>
+        <div class="logo-container">LOGO</div>
+        <div>
+            <h1 class="title">Laporan Transaksi Keuangan</h1>
+            <p class="subtitle">Sistem Manajemen Keuangan Digital</p>
         </div>
     </div>
-
+    <div class="info-grid">
+        <div class="info-card">
+            <span class="info-label">Periode Laporan</span>
+            <span class="info-value">{{ \Carbon\Carbon::parse($start)->format('d M Y') }} - {{ \Carbon\Carbon::parse($end)->format('d M Y') }}</span>
+        </div>
+        <div class="info-card">
+            <span class="info-label">Tanggal Cetak</span>
+            <span class="info-value">{{ now()->format('d M Y H:i') }}</span>
+        </div>
+    </div>
     <table class="transaction-table">
         <thead>
             <tr>
-                <th width="15%">Tanggal</th>
-                <th width="15%">Tipe</th>
-                <th width="25%">Jumlah</th>
-                <th width="45%">Keterangan</th>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Jenis</th>
+                <th>Keterangan</th>
+                <th>Jumlah</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($transactions as $trx)
-            <tr class="{{ $trx->tipe === 'pemasukan' ? 'pemasukan' : 'pengeluaran' }}">
-                <td>{{ date('d/m/Y', strtotime($trx->tanggal)) }}</td>
-                <td style="text-transform: capitalize;">{{ $trx->tipe }}</td>
-                <td class="amount">Rp {{ number_format($trx->jumlah, 0, ',', '.') }}</td>
+            @foreach($transactions as $index => $trx)
+            <tr>
+                <td>{{ $index+1 }}</td>
+                <td>{{ \Carbon\Carbon::parse($trx->tanggal)->format('d M Y') }}</td>
+                <td>
+                    <span class="badge badge-{{ $trx->tipe === 'pemasukan' ? 'income' : 'expense' }}">
+                        {{ ucfirst($trx->tipe) }}
+                    </span>
+                </td>
                 <td>{{ $trx->keterangan }}</td>
+                <td class="amount {{ $trx->tipe === 'pemasukan' ? 'income' : 'expense' }}">
+                    Rp {{ number_format($trx->jumlah, 0, ',', '.') }}
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-
     <div class="footer">
-        Dicetak otomatis oleh sistem pada {{ date('d/m/Y H:i') }}
+        Dokumen ini dicetak otomatis oleh sistem pada {{ now()->format('d M Y H:i') }}
     </div>
+</div>
 </body>
 </html>

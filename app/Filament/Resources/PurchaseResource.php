@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources;
 
 use App\Models\Purchase;
@@ -6,15 +7,12 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use App\Models\Vendor;
-use App\Models\Product;
+use App\Filament\Resources\PurchaseResource\Pages;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
-use App\Filament\Resources\PurchaseResource\Pages;
 
 class PurchaseResource extends Resource
 {
@@ -24,7 +22,6 @@ class PurchaseResource extends Resource
     protected static ?string $navigationLabel = 'Barang Masuk';
     protected static ?string $navigationGroup = 'Manajemen Stok';
     protected static ?int $navigationSort = 4;
-    
 
     public static function form(Form $form): Form
     {
@@ -46,7 +43,7 @@ class PurchaseResource extends Resource
                     ->required()
                     ->unique(ignoreRecord: true),
 
-                    Forms\Components\Section::make('Daftar Produk')
+                Forms\Components\Section::make('Daftar Produk')
                     ->schema([
                         Repeater::make('items')
                             ->relationship()
@@ -57,28 +54,32 @@ class PurchaseResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->required(),
-                
+
                                 TextInput::make('jumlah_pack')
                                     ->label('Jumlah Pack Yang Dibeli')
                                     ->numeric()
                                     ->required(),
-                
+
                                 TextInput::make('harga_beli')
                                     ->label('Harga Beli per Pack')
-                                    ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->extraInputAttributes(['x-on:input' => "this.value = this.value.replace(/[^0-9.]/g, '')"])
+                                    ->dehydrateStateUsing(fn ($state) => $state ? str_replace('.', '', $state) : null)
+                                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null),
                                 
                                 TextInput::make('harga_jual')
                                     ->label('Harga Jual per Pack')
-                                    ->numeric()
-                                    ->required(),
+                                    ->required()
+                                    ->extraInputAttributes(['x-on:input' => "this.value = this.value.replace(/[^0-9.]/g, '')"])
+                                    ->dehydrateStateUsing(fn ($state) => $state ? str_replace('.', '', $state) : null)
+                                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', '.') : null),
+                                
                             ])
                             ->minItems(1)
                             ->columns(4)
-                            ->required()
+                            ->required(),
                     ])
-                    ->columnSpanFull()
-                
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -86,7 +87,6 @@ class PurchaseResource extends Resource
     {
         return $table
             ->columns([
-             
                 Tables\Columns\TextColumn::make('vendor.nama_vendor')
                     ->label('Vendor'),
 

@@ -83,12 +83,7 @@ class ProductResource extends Resource
             ->filters([
                 SelectFilter::make('kategori')
                     ->label('Kategori')
-                    ->options(fn () => Product::query()
-                        ->select('kategori')
-                        ->distinct()
-                        ->pluck('kategori', 'kategori')
-                        ->filter()
-                    )
+                    ->options(Product::$kategoriOptions)
                     ->searchable(),
             ])
             ->actions([

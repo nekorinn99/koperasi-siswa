@@ -36,10 +36,23 @@ class ListFinancialTransactions extends ListRecords
                         $data['end_date'],
                     ])->get();
 
+                    // Hitung saldo akhir sampai akhir periode
+                    $saldoAkhir = FinancialTransaction::where('tanggal', '<=', $data['end_date'])
+                        ->selectRaw("SUM(CASE WHEN tipe = 'pemasukan' THEN jumlah ELSE -jumlah END) as saldo")
+                        ->value('saldo') ?? 0;
+
+                    // Hitung total keuntungan dalam rentang periode
+                    $totalKeuntungan = $transactions->sum(function ($trx) {
+                        return $trx->tipe === 'pemasukan' ? $trx->jumlah : -$trx->jumlah;
+                    });
+
                     $pdf = Pdf::loadView('exports.financial-transactions', [
-                        'transactions' => $transactions,
-                        'start' => $data['start_date'],
-                        'end' => $data['end_date'],
+                        'transactions'     => $transactions,
+                        'start'            => $data['start_date'],
+                        'end'              => $data['end_date'],
+                        'saldoAkhir'       => $saldoAkhir,
+                        'totalKeuntungan'  => $totalKeuntungan,
+                        #'author'           => auth()->user()->name ?? 'Sistem',
                     ]);
 
                     return response()->streamDownload(
